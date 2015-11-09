@@ -1,10 +1,15 @@
 /* emg-sensor-scenario */
+/* Daniel Saul */
+
+//#include <MIDI.h>
+
+//MIDI_CREATE_DEFAULT_INSTANCE();
 
 const uint8_t LED_STATUS = 13;
 const uint8_t LED_PULSE = 11;
 const uint8_t BTN_A = 2;
 const uint8_t BTN_B = 3;
-const uint8_t INPUT = A5;
+const uint8_t INPUTPIN = A5;
 
 long value = 0;
 
@@ -14,20 +19,22 @@ char mode = 0;
 
 void setup() {
 
-  Serial.begin(115200);
+  Serial.begin(57600);
   Serial.println("EMG Sensor");
 
+  //MIDI.begin(4);
+
   pinMode(LED_STATUS, OUTPUT);
-  digitalWrite(STATUS_LED_PIN, HIGH);
+  digitalWrite(LED_STATUS, HIGH);
 
   pinMode(BTN_A, INPUT);
   pinMode(BTN_B, INPUT);
 
   delay(1000);
 
-  for(i=0;i++;i<10;){
-    zero_value += analogRead(INPUT);
-    delay(100);
+  for(int i=0;i++;i<10){
+    zero_value += analogRead(INPUTPIN);
+    delay(10);
   }
 
   zero_value = zero_value/10;
@@ -36,28 +43,33 @@ void setup() {
 
 void loop() {
 
-  /*
-  for(i=0;i++;i<10;){
-    value += analogRead(INPUT);
+
+/*  for(int i=0;i++;i<10){
+    value += analogRead(INPUTPIN);
     delay(10);
   }
   value = value/10;
   */
 
-  value = analogRead(INPUT);
+
+  value = analogRead(INPUTPIN);
 
   if(value > zero_value){
     value = value - zero_value;
+  }else{
+    value = 0;
   }
 
   analogWrite(LED_PULSE, value/4);
 
+  // MIDI Mode
   if(mode){
 
-      MIDI_TX(144,value/10,127);
-      delay(100);
-      MIDI_TX(128,value/10,127);
+      //MIDI.sendNoteOn(value/10,127,1);
+      //delay(100);
+      //MIDI.sendNoteOff(value/10,127,1);
 
+  // Serial Mode
   }else{
 
     Serial.println(value);
@@ -65,20 +77,14 @@ void loop() {
   }
 
   if(digitalRead(BTN_A)){
+    // Serial mode
     mode = 0;
   }
 
   if(digitalRead(BTN_B)){
+    // MIDI mode
     mode = 1;
   }
 
-  delay(100);
 
-}
-
-void MIDI_TX(unsigned char MESSAGE, unsigned char PITCH, unsigned char VELOCITY)
-{
-  Serial.print(MESSAGE);
-  Serial.print(PITCH);
-  Serial.print(VELOCITY);
 }
