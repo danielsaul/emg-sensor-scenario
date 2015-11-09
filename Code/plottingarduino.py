@@ -1,31 +1,109 @@
-import serial
+#import serial
+#import numpy as np
+#from matplotlib import pyplot as plt
+
+
+import matplotlib
+matplotlib.use('TKAgg')
 import numpy as np
-from matplotlib import pyplot as plt
-ser = serial.Serial('/dev/ttyACM0', 9600)
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import serial
 
-plt.ion() # set plot to animated
+#ser = serial.Serial('/dev/cu.usbmodem1411', 115200)
+#
+#plt.ion() # set plot to animated
+#
+#ydata = [0] * 50
+#ax1=plt.axes()
+#
+## make plot
+#line, = plt.plot(ydata)
+#plt.ylim([1,400])
+#
+## start data collection
+#while True:
+#    plt.ion() # set plot to animated
+#
+#    ydata = [0] * 50
+#    ax1=plt.axes()
+#
+## make plot
+#    line, = plt.plot(ydata)
+#    plt.ylim([1,400])
+#
+#    data = ser.readline().rstrip() # read data from serial
+#
+#    print data
+#
+#    ymin = float(min(ydata))-100
+#    ymax = float(max(ydata))+100
+#    plt.ylim([ymin,ymax])
+#    ydata.append(data)
+#    del ydata[0]
+#    line.set_xdata(np.arange(len(ydata)))
+#    line.set_ydata(ydata)  # update the data
+#    plt.draw() # update the plot
+#    plt.show()
 
-ydata = [0] * 50
-ax1=plt.axes()
+# import matplotlib.pyplot as plt
+# import matplotlib.animation as animation
+# import time
+#
+# fig = plt.figure()
+# ax1 = fig.add_subplot(1,1,1)
+#
+# def animate(i):
+#     pullData = open("sampleText.txt","r").read()
+#     dataArray = pullData.split('\n')
+#     xar = []
+#     yar = []
+#     for eachLine in dataArray:
+#         if len(eachLine)>1:
+#             x,y = eachLine.split(',')
+#             xar.append(int(x))
+#             yar.append(int(y))
+#     ax1.clear()
+#     ax1.plot(xar,yar)
+# ani = animation.FuncAnimation(fig, animate, interval=1000)
+# plt.show()
+#
+fig, ax = plt.subplots()
+line, = ax.plot(np.random.rand(10))
+ax.set_ylim(0, 1000)
+ax.set_xlim(0,1000)
+xdata, ydata = [0]*100, [0]*100
+raw = serial.Serial("/dev/cu.usbmodem1411",57600)
+# raw.open()
 
-# make plot
-line, = plt.plot(ydata)
-plt.ylim([10,40])
+def update(data):
+    line.set_ydata(data)
+    return line,
 
-# start data collection
-while True:
-    data = ser.readline().rstrip() # read data from serial
-                                   # port and strip line endings
-    if len(data.split(".")) == 2:
-        ymin = float(min(ydata))-10
-        ymax = float(max(ydata))+10
-        plt.ylim([ymin,ymax])
-        ydata.append(data)
-        del ydata[0]
-        line.set_xdata(np.arange(len(ydata)))
-        line.set_ydata(ydata)  # update the data
-        plt.draw() # update the plot
+def run(data):
+    t,y = data
+    del xdata[0]
+    del ydata[0]
+    xdata.append(t)
+    ydata.append(y)
+    line.set_data(xdata, ydata)
+    return line,
 
+def data_gen():
+    t = 0
+    while True:
+        t+=1
+        try:
+            dat = int(raw.readline())
+        except:
+            dat = 0
+        yield t, dat
+
+ani = animation.FuncAnimation(fig, run, data_gen, interval=100, blit=True)
+plt.show()
+
+
+     #
 #
 # import sys, serial, argparse
 # import numpy as np
