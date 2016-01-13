@@ -7,15 +7,6 @@ November 2015
 ##Subsystem Overview 
 ![alt text](Images/SystemDiagram.png "Overall System Diagram")
 
-
-##How To Use
-
-##Schematic(multisim)
-
-##Bass Cannon Demo
-
-##Final Results
-
 ## Authors
 - Daniel Saul
 - Franky Saxena
